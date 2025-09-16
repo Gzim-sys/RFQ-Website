@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request for Quotation</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #2c3e50;
+        }
+        .header h1 {
+            color: #2c3e50;
+            margin: 0;
+            font-size: 28px;
+        }
+        .header p {
+            color: #7f8c8d;
+            margin: 10px 0 0 0;
+            font-size: 16px;
+        }
+        .section {
+            margin-bottom: 25px;
+        }
+        .section h2 {
+            color: #34495e;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+            font-size: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background: white;
+        }
+        th {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: 600;
+            border: 1px solid #2980b9;
+        }
+        td {
+            padding: 8px;
+            border: 1px solid #ddd;
+            background: white;
+            vertical-align: top;
+        }
+        tr:nth-child(even) td {
+            background: #f8f9fa;
+        }
+        tr:hover td {
+            background: #e3f2fd;
+        }
+        .phase-header {
+            background: #ecf0f1 !important;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .sub-task {
+            padding-left: 20px;
+            font-style: italic;
+        }
+        .info-box {
+            background: #e8f4fd;
+            border: 1px solid #3498db;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .info-box h3 {
+            color: #2c3e50;
+            margin: 0 0 10px 0;
+        }
+        .download-btn {
+            background: linear-gradient(135deg, #27ae60, #229954);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 20px 10px 20px 0;
+            transition: all 0.3s ease;
+        }
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            text-align: center;
+            color: #7f8c8d;
+        }
+        input[type="text"], input[type="email"], input[type="date"], input[type="number"], textarea, select {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+        input[type="text"]:focus, input[type="email"]:focus, input[type="date"]:focus, input[type="number"]:focus, textarea:focus, select:focus {
+            outline: 2px solid #3498db;
+            border-color: #3498db;
+        }
+        .form-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #f8f9fa;
+        }
+        .instructions {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+        .form-row label {
+            min-width: 150px;
+            font-weight: bold;
+        }
+        .form-row input, .form-row select {
+            flex: 1;
+        }
+        .table-input {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        .total-row {
+            background: #2c3e50 !important;
+            color: white !important;
+            font-weight: bold;
+        }
+        .auto-calc {
+            background: #e8f5e8 !important;
+            font-weight: bold;
+            color: #2e7d32;
+        }
+        .editable-task {
+            background: #fff8e1 !important;
+            border: 1px solid #ffc107 !important;
+        }
+        .save-btn {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 20px 10px 20px 0;
+            transition: all 0.3s ease;
+        }
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .add-task-btn {
+            background: #17a2b8;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+        .delete-task-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .share-section {
+            background: #f0f8ff;
+            border: 2px solid #4169e1;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .share-link {
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 14px;
+            word-break: break-all;
+            margin: 10px 0;
+        }
+        .copy-btn {
+            background: #4169e1;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="share-section">
+            <h3>🔗 Share This RFQ</h3>
+            <p>Copy this link to share with vendors:</p>
+            <div class="share-link" id="shareLink"></div>
+            <button class="copy-btn" onclick="copyShareLink()">📋 Copy Link</button>
+            <p><small>Vendors can fill out the form and download their responses directly from this link</small></p>
+        </div>
+
+        <div class="header">
+            <h1>REQUEST FOR QUOTATION</h1>
+            <p>System Implementation Services</p>
+            <div class="form-row">
+                <label><strong>RFQ Reference:</strong></label>
+                <input type="text" id="rfqRef" value="RFQ-SYS-2024-001" onchange="saveProgress()">
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Project Overview</h2>
+            <textarea id="projectOverview" rows="3" placeholder="Enter project description and overview..." onchange="saveProgress()">We are seeking quotations for comprehensive system implementation services across multiple business modules. The project involves setup, configuration, training, and documentation for various organizational systems.</textarea>
+        </div>
+
+        <div class="instructions">
+            <h3>Instructions for Vendors</h3>
+            <p><strong>Please provide your quotation including:</strong></p>
+            <ul>
+                <li>Edit task descriptions if needed (yellow fields are editable)</li>
+                <li>Enter estimated time (days) for each task</li>
+                <li>Enter your daily rate in CHF (total costs calculate automatically)</li>
+                <li>Fill in project timeline and methodology information</li>
+                <li>Complete vendor information section</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Scope of Work</h2>
+            <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 20px;">
+                <div>
+                    <label><strong>Currency: CHF (₣)</strong></label>
+                </div>
+                <span style="font-style: italic; color: #666;">
+                    💡 Total costs calculate automatically: Days × Daily Rate = Total
+                </span>
+            </div>
+            
+            <table id="rfqTable">
+                <thead>
+                    <tr>
+                        <th style="width: 35%;">Task Description (Editable)</th>
+                        <th style="width: 12%;">Time (Days)</th>
+                        <th style="width: 18%;">Daily Rate (CHF)</th>
+                        <th style="width: 18%;">Total Cost (CHF)</th>
+                        <th style="width: 17%;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="taskTableBody">
+                </tbody>
+            </table>
+        </div>
+
+        <div class="form-section">
+            <h3>Additional Project Information</h3>
+            <div class="form-row">
+                <label>Project Timeline:</label>
+                <input type="text" id="timeline" placeholder="e.g., 3 months, Start: January 2025" onchange="saveProgress()">
+            </div>
+            <div class="form-row">
+                <label>Resource Allocation:</label>
+                <input type="text" id="resources" placeholder="Number of team members and roles" onchange="saveProgress()">
+            </div>
+            <div class="form-row">
+                <label>Methodology:</label>
+                <select id="methodology" onchange="saveProgress()">
+                    <option value="">Select methodology</option>
+                    <option value="Agile">Agile</option>
+                    <option value="Waterfall">Waterfall</option>
+                    <option value="Hybrid">Hybrid</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label>Support Period:</label>
+                <input type="text" id="support" placeholder="e.g., 6 months post go-live" onchange="saveProgress()">
+            </div>
+            <div class="form-row">
+                <label>Payment Terms:</label>
+                <input type="text" id="payment" placeholder="e.g., 30% upfront, 70% on completion" onchange="saveProgress()">
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3>Vendor Information</h3>
+            <div class="form-row">
+                <label>Company Name:</label>
+                <input type="text" id="companyName" placeholder="Enter company name" onchange="saveProgress()">
+            </div>
+            <div class="form-row">
+                <label>Contact Person:</label>
+                <input type="text" id="contactPerson" placeholder="Enter contact person name" onchange="saveProgress()">
+            </div>
+            <div class="form-row">
+                <label>Email:</label>
+                <input type="email" id="email" placeholder="Enter email address" onchange="saveProgress()">
+            </div>
+            <div class="form-row">
+                <label>Phone:</label>
+                <input type="text" id="phone" placeholder="Enter phone number" onchange="saveProgress()">
+            </div>
+            <div class="form-row">
+                <label>Submission Date:</label>
+                <input type="date" id="submissionDate" onchange="saveProgress()">
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Submission Requirements</h2>
+            <div class="form-row">
+                <label><strong>Deadline:</strong></label>
+                <input type="date" id="deadline" placeholder="Set submission deadline" onchange="saveProgress()">
+            </div>
+            <div class="form-row">
+                <label><strong>Submit to:</strong></label>
+                <input type="email" id="submitEmail" placeholder="Enter contact email" onchange="saveProgress()">
+            </div>
+            
+            <button class="download-btn" onclick="downloadExcel()">📥 Download Completed Response as Excel</button>
+            <button class="save-btn" onclick="saveProgress()">💾 Save Progress</button>
+            <button class="download-btn" onclick="window.print()" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">🖨️ Print PDF Version</button>
+        </div>
+
+        <div class="footer">
+            <p>This RFQ is confidential and proprietary. All information should be treated accordingly.</p>
+            <div class="form-row">
+                <label><strong>Contact:</strong></label>
+                <input type="text" id="contactInfo" placeholder="Enter your contact information" onchange="saveProgress()">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let taskCounter = 0;
+
+        // Default tasks structure
+        const defaultTasks = [
+            { type: 'phase', title: '1. NEEDS ASSESSMENT AND REQUIREMENTS DEFINITION PHASE' },
+            { type: 'task', description: 'Initial Assessment', estimatedDays: 2 },
+            { type: 'phase', title: '2. VALIDATION OF LOGISTICAL PROCEDURES' },
+            { type: 'task', description: 'Purchase Orders Module Setup', estimatedDays: 2 },
+            { type: 'task', description: 'Inventory & Asset Management Module Setup', estimatedDays: 2 },
+            { type: 'task', description: 'Approvals Module Setup', estimatedDays: 2 },
+            { type: 'task', description: 'User Documentation', estimatedDays: 1 },
+            { type: 'task', description: 'User Training', estimatedDays: 1.5 },
+            { type: 'phase', title: '3. HUMAN RESOURCES' },
+            { type: 'task', description: 'Employee Module Setup', estimatedDays: 2 },
+            { type: 'task', description: 'Time-off Module Setup', estimatedDays: 2 },
+            { type: 'task', description: 'Timesheet Module Setup', estimatedDays: 1 },
+            { type: 'task', description: 'Appraisals Setup', estimatedDays: 1.5 },
+            { type: 'task', description: 'Recruitment Setup', estimatedDays: 1 },
+            { type: 'task', description: 'User Documentation', estimatedDays: 1.5 },
+            { type: 'task', description: 'User Training', estimatedDays: 1.5 },
+            { type: 'phase', title: '4. FINANCE, ACCOUNTING, BUDGET, AND DONOR MANAGEMENT' },
+            { type: 'task', description: 'Accounting Module Setup', estimatedDays: 5.5 },
+            { type: 'task', description: 'Budget Management Setup', estimatedDays: 3 },
+            { type: 'task', description: 'Donor Management Setup', estimatedDays: 4 },
+            { type: 'task', description: 'User Documentation', estimatedDays: 1.5 },
+            { type: 'task', description: 'User Training', estimatedDays: 2 },
+            { type: 'phase', title: '5. EVOLUTION OF AUDIT MANAGEMENT' },
+            { type: 'task', description: 'Integration of CHS Repository Functionality', estimatedDays: 3 },
+            { type: 'task', description: 'Data Management and Links with Donors', estimatedDays: 1 },
+            { type: 'task', description: 'Monitoring and Rating Process', estimatedDays: 2 },
+            { type: 'task', description: 'Visual Monitoring and Reports', estimatedDays: 2 },
+            { type: 'phase', title: '6. GO-LIVE' },
+            { type: 'task', description: 'Go-live Support and Implementation', estimatedDays: '' }
+        ];
+
+        function generateTaskTable() {
+            const tbody = document.getElementById('taskTableBody');
+            tbody.innerHTML = '';
+            
+            defaultTasks.forEach((item, index) => {
+                if (item.type === 'phase') {
+                    const row = document.createElement('tr');
+                    row.className = 'phase-header';
+                    row.innerHTML = `<td colspan="5"><strong>${item.title}</strong></td>`;
+                    tbody.appendChild(row);
+                } else {
+                    const row = document.createElement('tr');
+                    row.id = `task-row-${taskCounter}`;
+                    row.innerHTML = `
+                        <td>
+                            <input type="text" class="table-input editable-task" 
+                                   value="${item.description}" 
+                                   onchange="saveProgress()"
+                                   style="font-style: italic; padding-left: 20px;"
+                                   placeholder="Enter task description">
+                        </td>
+                        <td>
+                            <input type="number" class="table-input" 
+                                   value="${item.estimatedDays}" 
+                                   step="0.5" min="0"
+                                   onchange="calculateCost(${taskCounter}); saveProgress()"
+                                   id="days-${taskCounter}"
+                                   placeholder="Days">
+                        </td>
+                        <td>
+                            <input type="number" class="table-input" 
+                                   placeholder="Daily rate CHF" 
+                                   step="50" min="0"
+                                   onchange="calculateCost(${taskCounter}); saveProgress()"
+                                   id="rate-${taskCounter}">
+                        </td>
+                        <td>
+                            <input type="number" class="table-input auto-calc" 
+                                   readonly
+                                   placeholder="0.00"
+                                   id="total-${taskCounter}">
+                        </td>
+                        <td>
+                            <button class="add-task-btn" onclick="addTaskAfter(${taskCounter})">+ Add</button>
+                            <button class="delete-task-btn" onclick="deleteTask(${taskCounter})">Delete</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                    taskCounter++;
+                }
+            });
+
+            // Add total row
+            const totalRow = document.createElement('tr');
+            totalRow.className = 'total-row';
+            totalRow.innerHTML = `
+                <td colspan="3"><strong>TOTAL PROJECT COST (CHF)</strong></td>
+                <td>
+                    <input type="number" class="table-input" 
+                           readonly 
+                           id="projectTotal"
+                           placeholder="0.00"
+                           style="background: #f39c12; color: white; font-weight: bold; border: none;">
+                </td>
+                <td></td>
+            `;
+            tbody.appendChild(totalRow);
+        }
+
+        function calculateCost(taskId) {
+            const daysInput = document.getElementById(`days-${taskId}`);
+            const rateInput = document.getElementById(`rate-${taskId}`);
+            const totalInput = document.getElementById(`total-${taskId}`);
+            
+            if (daysInput && rateInput && totalInput) {
+                const days = parseFloat(daysInput.value) || 0;
+                const rate = parseFloat(rateInput.value) || 0;
+                const total = days * rate;
+                
+                totalInput.value = total.toFixed(2);
+                calculateProjectTotal();
+            }
+        }
+
+        function calculateProjectTotal() {
+            let total = 0;
+            for (let i = 0; i < taskCounter; i++) {
+                const totalInput = document.getElementById(`total-${i}`);
+                if (totalInput) {
+                    const taskTotal = parseFloat(totalInput.value) || 0;
+                    total += taskTotal;
+                }
+            }
+            
+            const projectTotalElement = document.getElementById('projectTotal');
+            if (projectTotalElement) {
+                projectTotalElement.value = total.toFixed(2);
+            }
+        }
+
+        function addTaskAfter(taskId) {
+            const newRow = document.createElement('tr');
+            newRow.id = `task-row-${taskCounter}`;
+            newRow.innerHTML = `
+                <td>
+                    <input type="text" class="table-input editable-task" 
+                           placeholder="Enter task description" 
+                           onchange="saveProgress()"
+                           style="font-style: italic; padding-left: 20px;">
+                </td>
+                <td>
+                    <input type="number" class="table-input" 
+                           placeholder="Days" 
+                           step="0.5" min="0"
+                           onchange="calculateCost(${taskCounter}); saveProgress()"
+                           id="days-${taskCounter}">
+                </td>
+                <td>
+                    <input type="number" class="table-input" 
+                           placeholder="Daily rate CHF" 
+                           step="50" min="0"
+                           onchange="calculateCost(${taskCounter}); saveProgress()"
+                           id="rate-${taskCounter}">
+                </td>
+                <td>
+                    <input type="number" class="table-input auto-calc" 
+                           readonly
+                           placeholder="0.00"
+                           id="total-${taskCounter}">
+                </td>
+                <td>
+                    <button class="add-task-btn" onclick="addTaskAfter(${taskCounter})">+ Add</button>
+                    <button class="delete-task-btn" onclick="deleteTask(${taskCounter})">Delete</button>
+                </td>
+            `;
+            
+            const currentRow = document.getElementById(`task-row-${taskId}`);
+            if (currentRow && currentRow.parentNode) {
+                currentRow.parentNode.insertBefore(newRow, currentRow.nextSibling);
+                taskCounter++;
+                saveProgress();
+            }
+        }
+
+        function deleteTask(taskId) {
+            const row = document.getElementById(`task-row-${taskId}`);
+            if (row && confirm('Are you sure you want to delete this task?')) {
+                row.remove();
+                calculateProjectTotal();
+                saveProgress();
+            }
+        }
+
+        function copyShareLink() {
+            const shareLink = document.getElementById('shareLink').textContent;
+            navigator.clipboard.writeText(shareLink).then(() => {
+                alert('Link copied to clipboard! You can now share it with vendors.');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = shareLink;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert('Link copied to clipboard! You can now share it with vendors.');
+            });
+        }
+
+        function saveProgress() {
+            // In a real environment, this would save to a database
+            console.log('Progress saved locally');
+        }
+
+        function downloadExcel() {
+            const wb = XLSX.utils.book_new();
+            const company = document.getElementById('companyName').value || 'Vendor Response';
+            
+            // Collect all data
+            const wsData = [
+                [`RFQ RESPONSE - ${company.toUpperCase()}`],
+                [`RFQ Reference: ${document.getElementById('rfqRef').value}`],
+                [`Currency: CHF`],
+                [`Submission Date: ${document.getElementById('submissionDate').value}`],
+                [],
+                ['Project Overview:', document.getElementById('projectOverview').value],
+                [],
+                ['TASK DESCRIPTION', 'DAYS', 'DAILY RATE (CHF)', 'TOTAL COST (CHF)'],
+            ];
+
+            let grandTotal = 0;
+
+            // Add task data
+            for (let i = 0; i < taskCounter; i++) {
+                const taskRow = document.getElementById(`task-row-${i}`);
+                if (taskRow) {
+                    const descInput = taskRow.querySelector('.editable-task');
+                    const daysInput = document.getElementById(`days-${i}`);
+                    const rateInput = document.getElementById(`rate-${i}`);
+                    const totalInput = document.getElementById(`total-${i}`);
+                    
+                    const description = descInput ? descInput.value : '';
+                    const days = daysInput ? daysInput.value : '';
+                    const rate = rateInput ? rateInput.value : '';
+                    const total = totalInput ? totalInput.value : '';
+                    
+                    if (description) {
+                        wsData.push([description, days, rate, total]);
+                        grandTotal += parseFloat(total) || 0;
+                    }
+                }
+            }
+
+            wsData.push(['', '', 'TOTAL:', grandTotal.toFixed(2)]);
+            wsData.push([]);
+
+            // Add additional info
+            wsData.push(['ADDITIONAL INFORMATION:']);
+            wsData.push(['Project Timeline:', document.getElementById('timeline').value]);
+            wsData.push(['Resource Allocation:', document.getElementById('resources').value]);
+            wsData.push(['Methodology:', document.getElementById('methodology').value]);
+            wsData.push(['Support Period:', document.getElementById('support').value]);
+            wsData.push(['Payment Terms:', document.getElementById('payment').value]);
+            wsData.push([]);
+            wsData.push(['VENDOR INFORMATION:']);
+            wsData.push(['Company Name:', document.getElementById('companyName').value]);
+            wsData.push(['Contact Person:', document.getElementById('contactPerson').value]);
+            wsData.push(['Email:', document.getElementById('email').value]);
+            wsData.push(['Phone:', document.getElementById('phone').value]);
+            
+            const ws = XLSX.utils.aoa_to_sheet(wsData);
+            
+            // Set column widths
+            ws['!cols'] = [
+                { width: 40 },  // Description
+                { width: 10 },  // Days
+                { width: 15 },  // Rate
+                { width: 15 }   // Total
+            ];
+            
+            XLSX.utils.book_append_sheet(wb, ws, 'RFQ Response');
+            
+            // Generate filename
+            const companyName = document.getElementById('companyName').value || 'Vendor';
+            const filename = `RFQ_Response_${companyName.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().split('T')[0]}.xlsx`;
+            
+            XLSX.writeFile(wb, filename);
+        }
+
+        // Initialize on page load
+        window.onload = function() {
+            // Set today's date as default
+            document.getElementById('submissionDate').valueAsDate = new Date();
+            
+            // Set share link
+            document.getElementById('shareLink').textContent = window.location.href;
+            
+            // Generate the task table
+            generateTaskTable();
+        };
+    </script>
+</body>
+</html>
